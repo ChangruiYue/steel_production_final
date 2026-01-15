@@ -38,6 +38,7 @@ Accurate prediction of steel production quality is critical for improving proces
 The dataset consists of 21 normalized input variables representing steel production process parameters and one continuous output variable corresponding to production quality. The dataset is divided into training, validation, and test sets to ensure unbiased performance evaluation.
 
 ### Feature Relationships and Distributions
+![alt text](pairplot_inputs_output.png)
 Figure 1 illustrates the pairwise scatter plots between representative input features and the output variable. Several inputs exhibit discrete or clustered patterns, indicating that certain process parameters operate within limited or predefined ranges. Nonlinear and heterogeneous relationships between inputs and output can also be observed, suggesting that linear regression models would be insufficient for this task. The output distribution shown along the diagonal reveals a concentration around mid-range values, with relatively fewer extreme cases. This imbalance implies that extreme quality conditions may be more difficult to predict accurately.
 
 ---
@@ -59,12 +60,17 @@ Model hyperparameters are optimized using grid search with cross-validation on t
 ## Results
 
 ### Learning Behavior Analysis
+![alt text](random_forest_learning_curve.png)
 Figure 2 presents the learning curve illustrating the impact of training data size on model performance. As the number of training samples increases, validation RMSE decreases steadily, while training RMSE increases slightly. This pattern indicates improved generalization and suggests that the model benefits from additional data without suffering from severe overfitting. The diminishing performance gain at larger sample sizes implies that the model is approaching its learning capacity under the current feature set.
 
 ### Prediction Accuracy and Residual Analysis
+![alt text](random_forest_pred_vs_true.png)
+![alt text](random_forest_pred_vs_true-1.png)
 Figure 3 shows the prediction-versus-actual relationship for the Random Forest model. Most predictions align closely with the ideal diagonal line, indicating accurate estimation across the majority of the output range. The corresponding residual distribution in Figure 4 is centered near zero with relatively symmetric dispersion, demonstrating low systematic bias and stable error behavior.
 
 ### Comparative Residual Diagnostics
+![alt text](gaussian_process_residuals.png)
+![alt text](svm_residuals.png)
 To further investigate model-specific error characteristics, residual distributions for GPR and SVR are presented in Figures 5 and 6. The GPR residuals (Figure 5) exhibit structured patterns and increased variance for larger residual values. This behavior suggests a smoothing effect inherent to Gaussian processes, leading to underestimation of extreme output values. In contrast, the SVR residuals (Figure 6) show heavier tails, indicating higher sensitivity to local data density and kernel parameterization. These characteristics explain why SVR achieves moderate average performance but displays reduced robustness compared to Random Forest.
 
 ### Quantitative Performance and Efficiency Comparison
@@ -84,6 +90,7 @@ Table 2 reports training and inference time. Although MLP offers the fastest inf
 | MLP           | 0.0755 | 0.0571 | 0.3002 | 0.90 | 0.0034 |
 
 ### Discussion
+![alt text](svm_residuals-1.png)
 Figure 7 Model Performance Comparison with Error Bars consolidates the performance comparison of four regression models for steel production quality prediction, with uncertainty represented by the error bars. Among them, Random Forest (RF) consistently emerges as the most suitable choice when balancing accuracy, robustness, and computational efficiency. RF achieves RMSE = 0.0671, MAE = 0.0489, and R^2 = 0.4472, and these advantages persist across different operating regimes, as visualized in the right-hand panel of the figure. This pattern can be attributed to RF’s ensemble structure, which captures nonlinear feature interactions while dampening the impact of noise and outliers, thereby producing more stable residuals and better generalization to unseen data.
 
 By contrast, Gaussian Process Regression (GPR) shows a smoothing tendency that reduces variance but underestimates extreme outputs under high-variance conditions, and its substantial computational cost reduces practicality for iterative model updates in a production setting (RMSE = 0.0736, MAE = 0.0556, R^2 = 0.3343). Support Vector Regression (SVR) sits between RF and GPR in performance; it delivers reasonable accuracy but is notably sensitive to kernel choice and data distribution, leading to residuals that vary across operating regimes (RMSE = 0.0719, MAE = 0.0536, R^2 = 0.3649). Neural networks, exemplified by the Multi-layer Perceptron (MLP), offer fast inference but show higher variance and weaker robustness under the current configuration (RMSE = 0.0755, MAE = 0.0571, R^2 = 0.3002). These results suggest that MLP’s potential is contingent on more data or more careful architectural tuning.
