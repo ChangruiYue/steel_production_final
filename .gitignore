@@ -1,5 +1,9 @@
+# 忽略大文件/模型产物
 models/
-results/
 *.pkl
 *.joblib
-git add .
+
+# 但保留 results 目录中的 CSV/PNG 等小文件
+!results/
+!results/**/*.csv
+!results/**/*.png
